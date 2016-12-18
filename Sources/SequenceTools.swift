@@ -31,11 +31,17 @@ extension Sequence {
         }
         return true
     }
-
 }
 
 extension RangeReplaceableCollection where Iterator.Element: ExpressibleByIntegerLiteral {
-    init(zeros: Int) {
+    public init(zeros: Int) {
         self.init(repeatElement(0, count: zeros))
     }
 }
+
+public extension BidirectionalCollection {
+    public var lastIndex: Index {
+        return index(before: endIndex)
+    }
+}
+
