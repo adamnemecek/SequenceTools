@@ -45,3 +45,23 @@ public extension BidirectionalCollection {
     }
 }
 
+extension RangeReplaceableCollection where Iterator.Element: Equatable, Indices.Iterator.Element == Index {
+    public mutating func remove(_ element: Iterator.Element) {
+        for (index, e) in zip(indices, self) where element == e {
+            remove(at: index)
+        }
+    }
+}
+
+extension Sequence where Iterator.Element: Hashable {
+    public var unique: [Iterator.Element] {
+        var s: Set<Iterator.Element> = []
+        return filter { s.insert($0).inserted }
+    }
+
+    public var duplicates: [Iterator.Element] {
+        var s: Set<Iterator.Element> = []
+        return filter { !s.insert($0).inserted }
+    }
+}
+
