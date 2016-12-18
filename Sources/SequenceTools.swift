@@ -1,4 +1,4 @@
-
+import Foundation
 
 extension Sequence {
     public func scan<T>(_ initial: T, _ combine: (T, Iterator.Element) throws -> T) rethrows -> [T] {
@@ -65,3 +65,63 @@ extension Sequence where Iterator.Element: Hashable {
     }
 }
 
+extension Int {
+    static var random: Int {
+        return Int(arc4random_uniform(UInt32.max))
+    }
+}
+
+public protocol RandomizableCollection: Collection {
+    var randomIndex: Index { get }
+}
+
+extension RandomizableCollection {
+    public var random: Iterator.Element? {
+        return first.map { _ in self[randomIndex] }
+    }
+}
+
+extension Collection where IndexDistance == Int {
+    /// Return a random element from the array
+    public var randomIndex: Index {
+        let offset = Int(arc4random_uniform(UInt32(count.toIntMax())))
+        return index(startIndex, offsetBy: offset)
+    }
+}
+
+extension Array: RandomizableCollection { }
+
+extension Collection {
+    public func scatter<S: Sequence>(_ indices: S) -> [Iterator.Element] where S.Iterator.Element == Index {
+        return indices.map { self[$0] }
+    }
+}
+
+
+/*
+public func randomShuffle<T>(_ a: [T]) -> [T] {
+  var result = a
+  for i in (1..<a.count).reversed() {
+    // FIXME: 32 bits are not enough in general case!
+    let j = Int(rand32(exclusiveUpperBound: UInt32(i + 1)))
+    if i != j {
+      swap(&result[i], &result[j])
+    }
+  }
+  return result
+}
+
+public func gather<C : Collection, IndicesSequence : Sequence>(
+  _ collection: C, _ indices: IndicesSequence
+) -> [C.Iterator.Element]
+  where IndicesSequence.Iterator.Element == C.Index {
+  return Array(indices.map { collection[$0] })
+}
+
+public func scatter<T>(_ a: [T], _ idx: [Int]) -> [T] {
+  var result = a
+  for i in 0..<a.count {
+    result[idx[i]] = a[i]
+  }
+  return result
+}*/
